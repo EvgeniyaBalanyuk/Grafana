@@ -1,0 +1,65 @@
+groups:
+  - name: CPU Alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on instance {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 2 minutes. Current value: {{ $value }}%"
+
+  - name: Load Alerts
+    rules:
+      # Алерт для node_load1
+      - alert: HighLoad1
+        expr: node_load1 > 1.5 * count(node_cpu_seconds_total{mode="system"} offset 1m)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 1-minute load on instance {{ $labels.instance }}"
+          description: "1-minute load average is {{ $value }}, exceeding 1.5x the number of CPU cores."
+
+      # Алерт для node_load5
+      - alert: HighLoad5
+        expr: node_load5 > 1.2 * count(node_cpu_seconds_total{mode="system"} offset 1m)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 5-minute load on instance {{ $labels.instance }}"
+          description: "5-minute load average is {{ $value }}, exceeding 1.2x the number of CPU cores."
+
+      # Алерт для node_load15
+      - alert: HighLoad15
+        expr: node_load15 > count(node_cpu_seconds_total{mode="system"} offset 1m)
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 15-minute load on instance {{ $labels.instance }}"
+          description: "15-minute load average is {{ $value }}, exceeding the number of CPU cores."
+
+  - name: Memory Alerts
+    rules:
+      - alert: LowAvailableMemory
+        expr: node_memory_MemAvailable_bytes < 500000000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low available memory on instance {{ $labels.instance }}"
+          description: "Available memory is below 500 MB ({{ $value | humanize1024 }}). Immediate action may be required."
+
+  - name: Filesystem Alerts
+    rules:
+      - alert: LowDiskSpace
+        expr: node_filesystem_free_bytes{fstype!="tmpfs", mountpoint="/"} < 5000000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on root filesystem of instance {{ $labels.instance }}"
+          description: "Free disk space on `/` is below 5 GB ({{ $value | humanize1024 }}). Immediate action may be required."
