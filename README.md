@@ -66,7 +66,9 @@
 1. Сохраните ваш Dashboard.Для этого перейдите в настройки Dashboard, выберите в боковом меню «JSON MODEL». Далее скопируйте отображаемое json-содержимое в отдельный файл и сохраните его.
 2. В качестве решения задания приведите листинг этого файла.
 
-alert.json
+## Ответ:
+
+[alert](https://github.com/EvgeniyaBalanyuk/Grafana/blob/main/alert.json)
 
 
 ---
